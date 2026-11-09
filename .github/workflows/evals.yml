@@ -1,0 +1,32 @@
+name: Evals
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }} # the bot and tinyeval's judge both use it
+    steps:
+      - uses: actions/checkout@v7
+      - uses: leafo/gh-actions-lua@v13 # caches its Lua build
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v6
+      - uses: actions/cache@v6
+        with:
+          path: lua_modules
+          key: rocks-${{ runner.os }}-lua5.4-${{ hashFiles('*.rockspec') }}
+      - run: luarocks --tree lua_modules install --only-deps lua-llm-evals-dev-1.rockspec
+      # Lua has no build step, so check that the bot loads with its rocks.
+      - run: eval "$(luarocks --tree lua_modules path)" && lua -e 'require("support")'
+      - run: ./tinyeval -n 3
+        if: env.ANTHROPIC_API_KEY != ''
+      - run: echo "::notice::Add the ANTHROPIC_API_KEY repository secret to run the evals."
+        if: env.ANTHROPIC_API_KEY == ''
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: eval-results
+          path: eval-results.json
