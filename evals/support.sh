@@ -1,6 +1,6 @@
 # Evals for the support bot in support.lua. The worker loads it once and answers every test case.
-# luarocks path points Lua at the rocks in lua_modules, for the Lua version they were built for.
-worker env LUA_PATH="$(luarocks --tree lua_modules path --lr-path);;" LUA_CPATH="$(luarocks --tree lua_modules path --lr-cpath);;" lua evals/worker.lua
+# lua_modules/bin/tinyeval points Lua at the rocks in lua_modules, so the worker line needs no paths.
+worker lua evals/worker.lua
 
 test_case "refund after the window" "Can I still return my shoes? They arrived 40 days ago."
   target support.lua#answer

@@ -21,7 +21,7 @@ jobs:
       - run: luarocks --tree lua_modules install --only-deps lua-llm-evals-dev-1.rockspec
       # Lua has no build step, so check that the bot loads with its rocks.
       - run: eval "$(luarocks --tree lua_modules path)" && lua -e 'require("support")'
-      - run: ./tinyeval -n 3
+      - run: lua_modules/bin/tinyeval -n 3
         if: env.ANTHROPIC_API_KEY != ''
       - run: echo "::notice::Add the ANTHROPIC_API_KEY repository secret to run the evals."
         if: env.ANTHROPIC_API_KEY == ''

@@ -14,6 +14,7 @@ dependencies = {
   "luasocket >= 3.1",
   "luasec >= 1.3",
   "dkjson >= 2.8",
+  "tinyeval == 0.11.0", -- the eval runner and its worker helper, pinned so CI and teammates run the same one
 }
 build = {
   type = "builtin",
